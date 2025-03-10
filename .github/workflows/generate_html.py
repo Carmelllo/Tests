@@ -20,7 +20,7 @@ def generate_project_section(project_folder):
         <h1>{project_name}</h1>
     """
     
-    # Non-verbali documents (include root-level PDFs)
+    # Non-verbali documents (include root-level PDFs)a
     non_verbali = []
     for doc in glob.glob(f"{project_path}/**/*.pdf", recursive=True):
         # Check if "verbali" is in the relative path from the project folder
