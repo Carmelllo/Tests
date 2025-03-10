@@ -4,11 +4,17 @@ import re
 from datetime import datetime
 
 def get_projects():
-    """Find all numbered project folders (1-candidatura, 2-rtb, etc.)"""
+    """Find and sort numbered project folders descending by prefix"""
+    projects = [
+        f for f in os.listdir('Tests.github.io') 
+        if re.match(r'^\d+-', f) and os.path.isdir(os.path.join('Tests.github.io', f))
+    ]
+    
+    # Sort by numeric prefix descending (3-pb → 2-rtb → 1-candidatura)
     return sorted(
-        [f for f in os.listdir('Tests.github.io') 
-         if re.match(r'^\d+-', f) and os.path.isdir(os.path.join('Tests.github.io', f))],
-        key=lambda x: int(x.split('-')[0])
+        projects,
+        key=lambda x: int(re.search(r'^(\d+)', x).group(1)),
+        reverse=True
     )
 
 def generate_project_section(project_folder):
