@@ -17,15 +17,13 @@ def generate_project_section(project_folder):
         <h1>{project_name}</h1>
     """
     
-    # Non-verbali documents
+    # Non-verbali documents (include all PDFs not in verbali subfolders)
     non_verbali = []
-    for doc in glob.glob(f"{project_path}/*.pdf"):
-        if "verbali" not in doc:
+    for doc in glob.glob(f"{project_path}/**/*.pdf", recursive=True):
+        if "verbali" not in os.path.dirname(doc):
+            rel_path = os.path.relpath(doc, project_path)
             doc_name = os.path.basename(doc).replace(".pdf", "").replace("-", " ").title()
-            non_verbali.append(f'<li><a href="{project_folder}/{os.path.basename(doc)}">{doc_name}</a></li>')
-    
-    if non_verbali:
-        html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
+            non_verbali.append(f'<li><a href="{project_folder}/{rel_path}">{doc_name}</a></li>')
     
     # Verbali subsections
     html += '<div class="verbali-container">'
