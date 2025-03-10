@@ -14,7 +14,7 @@ def generate_project_section(project_folder):
     project_name = re.sub(r'^\d+-', '', project_folder).replace("-", " ").title()
     
     html = f"""
-    <section class="project-section">
+    <section id="{project_folder}">
         <h1>{project_name}</h1>
     """
     
@@ -48,23 +48,39 @@ def generate_project_section(project_folder):
     
     return html
 
+def generate_aside_links(projects):
+    """Generate navigation links for the aside"""
+    links = []
+    for project in projects:
+        name = re.sub(r'^\d+-', '', project).replace("-", " ").title()
+        links.append(f'<li><a href="#{project}">{name}</a></li>')
+    return '\n'.join(links)
+
 def update_index():
     # Read the existing index.html
     with open("Tests.github.io/index.html", "r") as f:
         content = f.read()
     
-    # Generate project sections
-    projects_html = "\n".join([generate_project_section(p) for p in get_projects()])
+    # Get all projects
+    projects = get_projects()
     
-    # Replace the placeholder in index.html
-    new_content = content.replace(
-        '<!-- AUTO-GENERATED SECTIONS -->',
+    # Generate aside links
+    aside_links = generate_aside_links(projects)
+    content = content.replace(
+        '<!-- ASIDE LINKS PLACEHOLDER -->',
+        aside_links
+    )
+    
+    # Generate project sections
+    projects_html = "\n".join([generate_project_section(p) for p in projects])
+    content = content.replace(
+        '<!-- PROJECT SECTIONS PLACEHOLDER -->',
         projects_html
     )
     
     # Save the updated index.html
     with open("Tests.github.io/index.html", "w") as f:
-        f.write(new_content)
+        f.write(content)
 
 if __name__ == "__main__":
     update_index()
