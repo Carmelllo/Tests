@@ -29,9 +29,9 @@ jobs:
 
       - name: Deploy to Site Repo
         env:
-          GITHUB_TOKEN: ${{ secrets.SECRET}}
+          GITHUB_TOKEN: ${{ secrets.SECRET }}
         run: |
-          git clone "https://oauth2:$GITHUB_TOKEN@github.com/Carmelllo/Tests.github.io.git"
+          git clone "https://oauth2:$GITHUB_TOKEN@github.com/Carmelllo/Tests.github.io.git" site-repo
           cd site-repo
           
           # Remove old files and copy new ones
@@ -46,6 +46,8 @@ jobs:
           
           # Commit changes
           cd site-repo
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add .
           git commit -m "Update documents: $(date +'%Y-%m-%d')"
           git push origin main
