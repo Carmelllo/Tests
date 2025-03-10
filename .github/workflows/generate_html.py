@@ -30,7 +30,16 @@ def generate_project_section(project_folder):
             non_verbali.append(f'<li><a href="{project_folder}/{rel_path}">{doc_name}</a></li>')
     
     if non_verbali:
-        html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
+        html += """
+        <div class="documenti-container">
+            <h2>Documenti</h2>
+            <ul class="document-list">
+        """
+        html += '\n'.join(non_verbali)
+        html += """
+            </ul>
+        </div>
+        """
 
     
     # Verbali subsections
