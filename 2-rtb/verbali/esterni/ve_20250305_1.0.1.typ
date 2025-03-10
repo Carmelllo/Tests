@@ -3,7 +3,7 @@
 #show: content => verbale(
   titoloDocumento: "Prima Riunione",
   abstract: "Incontro conoscitivo, definizione del nome e del logo, definizione e creazione dei canali di comunicazione e discussione dei capitolati.",
-  responsabili: "Carmelo Russello",
+  responsabili: "Carmelo Russelloo",
   redattori: "Mirco Borella",
   verificatori: "Alessandro Bernardello",
   tipo: "Verbale Interno",
