@@ -31,21 +31,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.SECRET }}
         run: |
-          git clone "https://oauth2:$GITHUB_TOKEN@github.com/Carmelllo/Tests.github.io.git" site-repo
-          cd site-repo
+          git clone "https://oauth2:$GITHUB_TOKEN@github.com/Carmelllo/Tests.github.io.git" Tests.github.io
+          cd Tests.github.io
           
           # Remove old files and copy new ones
           rm -rf [0-9]-*
           cp -r ../compiled/* .
           
           # Generate updated index.html
-          cp index.html ..
           cd ..
-          python3 .github/workflows/generate_html.py
-          cp index.html site-repo/
+          python3 .github/workflows/generate_html.py  # Run the script
           
           # Commit changes
-          cd site-repo
+          cd Tests.github.io
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .
