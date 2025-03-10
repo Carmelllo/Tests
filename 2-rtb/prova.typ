@@ -1,4 +1,4 @@
-#import "../../../templates/template.typ": *
+#import "../templates/template.typ": *
 
 #show: content => verbale(
   titoloDocumento: "Seconda Riunione",
