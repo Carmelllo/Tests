@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 
 def get_projects():
+    """Find all numbered project folders (1-candidatura, 2-rtb, etc.)"""
     return sorted([f for f in os.listdir('Tests.github.io') 
                   if re.match(r'^\d+-', f)])
 
@@ -50,23 +51,21 @@ def update_index():
     with open("Tests.github.io/index.html", "r") as f:
         content = f.read()
     
+    # Generate aside links
     projects = get_projects()
-    projects_html = "\n".join([generate_project_section(p) for p in projects])
+    aside_links = "\n".join([f'<li><a href="#{p}">{re.sub(r"^\\d+-", "", p).replace("-", " ").title()}</a></li>' for p in projects])
+    content = content.replace("<!-- ASIDE LINKS PLACEHOLDER -->", aside_links)
     
-    # Define placeholders
+    # Generate main content
+    projects_html = "\n".join([generate_project_section(p) for p in projects])
     start_marker = "<!-- AUTO-GENERATED CONTENT START -->"
     end_marker = "<!-- AUTO-GENERATED CONTENT END -->"
-    
-    # Replace content between markers
     pattern = re.compile(f"{re.escape(start_marker)}.*?{re.escape(end_marker)}", re.DOTALL)
-    new_content = re.sub(
-        pattern,
-        f"{start_marker}\n{projects_html}\n{end_marker}",
-        content
-    )
+    content = re.sub(pattern, f"{start_marker}\n{projects_html}\n{end_marker}", content)
     
+    # Save changes
     with open("Tests.github.io/index.html", "w") as f:
-        f.write(new_content)
+        f.write(content)
 
 if __name__ == "__main__":
     update_index()
