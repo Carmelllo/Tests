@@ -57,7 +57,7 @@ def update_index():
     with open("Tests.github.io/index.html", "r") as f:
         content = f.read()
     
-    # Generate aside links with acronym handling
+    # Generate aside links with acronym handlings
     projects = get_projects()
     aside_links = []
     for p in projects:
