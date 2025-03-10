@@ -1,75 +1,51 @@
-name: Compile and Deploy Verbali
+name: Dynamic Document Deployment
 
 on:
   push:
     paths:
-      - '**/verbali/interni/*.typ'  # Watch for .typ files in interni folders
-      - '**/verbali/esterni/*.typ'  # Watch for .typ files in esterni folders
+      - '**/*.typ'
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      # --- Step 1: Checkout docs repo ---
       - name: Checkout Docs Repo
         uses: actions/checkout@v4
 
-      # --- Step 2: Install Typst CLI ---
       - name: Install Typst
         run: |
-          # Download and install Typst
           curl -L https://github.com/typst/typst/releases/download/v0.11.0/typst-x86_64-unknown-linux-musl.tar.xz | tar xJ
           echo "$(pwd)/typst-x86_64-unknown-linux-musl" >> $GITHUB_PATH
 
-      # --- Step 3: Compile PDFs ---
-      - name: Compile PDFs
+      - name: Compile All Documents
         run: |
-          # Find all .typ files in interni/esterni folders
-          find . -type f \( -path '*/verbali/interni/*.typ' -o -path '*/verbali/esterni/*.typ' \) | while read typ_file; do
-            
-            # Extract project name (e.g., "1-candidatura" from the path)
-            project_folder=$(echo "$typ_file" | cut -d'/' -f2)  # e.g., "1-candidatura"
-            
-            # Determine verbale type (interno/esterno)
-            if [[ "$typ_file" == *"/interni/"* ]]; then
-              verbale_type="interno"
-              filename_prefix="vi"
-            else
-              verbale_type="esterno"
-              filename_prefix="ve"
-            fi
-
-            # Extract date from filename (e.g., "vi_20241203_1.0.0.typ" → "20241203")
-            base_name=$(basename "$typ_file" .typ)
-            date_part=$(echo "$base_name" | cut -d'_' -f2)
-            
-            # Compile to PDF with clean name (e.g., "vi_20241203.pdf")
-            pdf_name="${filename_prefix}_${date_part}.pdf"
-            
-            # Target directory in the site repo
-            target_dir="compiled_pdfs/verbali/$project_folder/$verbale_type"
-            mkdir -p "$target_dir"
-            
-            # Compile the Typst file
-            typst compile "$typ_file" "$target_dir/$pdf_name"
+          # Compile all .typ files while preserving folder structure
+          find . -name '*.typ' | while read typ_file; do
+            rel_path="${typ_file#./}"
+            pdf_path="${rel_path%.typ}.pdf"
+            mkdir -p "compiled/$(dirname "$pdf_path")"
+            typst compile "$typ_file" "compiled/$pdf_path"
           done
 
-      # --- Step 4: Deploy to Site Repo ---
-      - name: Push to Site Repo
+      - name: Deploy to Site Repo
         env:
-          GITHUB_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}  # PAT with repo access
+          GITHUB_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
         run: |
-          # Clone the site repo
-          git clone "https://oauth2:$GITHUB_TOKEN@github.com/your-username/your-site-repo.git"
-          cd your-site-repo
+          git clone "https://oauth2:$GITHUB_TOKEN@github.com/your-username/site-repo.git"
+          cd site-repo
           
-          # Copy compiled PDFs to the site repo
-          mkdir -p verbali
-          cp -r ../compiled_pdfs/verbali/* verbali/
+          # Remove old files and copy new ones
+          rm -rf [0-9]-*
+          cp -r ../compiled/* .
           
-          # Commit and push
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          # Generate updated index.html
+          cp index.html ..
+          cd ..
+          python3 generate_sections.py
+          cp index.html site-repo/
+          
+          # Commit changes
+          cd site-repo
           git add .
-          git commit -m "Update verbali: $(date +'%Y-%m-%d')"
+          git commit -m "Update documents: $(date +'%Y-%m-%d')"
           git push origin main
