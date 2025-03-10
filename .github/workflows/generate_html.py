@@ -1,3 +1,12 @@
+import os
+import glob
+import re
+from datetime import datetime
+
+def get_projects():
+    return sorted([f for f in os.listdir('Tests.github.io') 
+                  if re.match(r'^\d+-', f)])
+
 def generate_project_section(project_folder):
     project_path = f"Tests.github.io/{project_folder}"
     project_name = re.sub(r'^\d+-', '', project_folder).replace("-", " ").title()
@@ -17,15 +26,15 @@ def generate_project_section(project_folder):
     if non_verbali:
         html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
     
-    # Verbali subsections (FIXED FOLDER NAMES)
+    # Verbali subsections
     html += '<div class="verbali-container">'
-    for tipo in ["interni", "esterni"]:  # Changed to match folder names
+    for tipo in ["interni", "esterni"]:
         verbali = sorted(glob.glob(f"{project_path}/verbali/{tipo}/*.pdf"), 
                        key=lambda x: os.path.basename(x), reverse=True)
         if verbali:
             html += f"""
             <div>
-                <h2>Verbale {tipo[:-1].title()}</h2>  # "interni" → "interno"
+                <h2>Verbale {tipo[:-1].title()}</h2>
                 <ul>
             """
             for pdf in verbali:
@@ -36,3 +45,28 @@ def generate_project_section(project_folder):
     html += '</div></section>'
     
     return html
+
+def update_index():
+    with open("Tests.github.io/index.html", "r") as f:
+        content = f.read()
+    
+    projects = get_projects()
+    projects_html = "\n".join([generate_project_section(p) for p in projects])
+    
+    # Define placeholders
+    start_marker = "<!-- AUTO-GENERATED CONTENT START -->"
+    end_marker = "<!-- AUTO-GENERATED CONTENT END -->"
+    
+    # Replace content between markers
+    pattern = re.compile(f"{re.escape(start_marker)}.*?{re.escape(end_marker)}", re.DOTALL)
+    new_content = re.sub(
+        pattern,
+        f"{start_marker}\n{projects_html}\n{end_marker}",
+        content
+    )
+    
+    with open("Tests.github.io/index.html", "w") as f:
+        f.write(new_content)
+
+if __name__ == "__main__":
+    update_index()
