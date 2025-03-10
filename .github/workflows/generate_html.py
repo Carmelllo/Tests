@@ -1,15 +1,4 @@
-import os
-import glob
-import re
-from datetime import datetime
-
-def get_projects():
-    """Find all numbered project folders (1-candidatura, 2-rtb, etc.)"""
-    return sorted([f for f in os.listdir('Tests.github.io') 
-                  if re.match(r'^\d+-', f)])
-
 def generate_project_section(project_folder):
-    """Generate HTML for a project section"""
     project_path = f"Tests.github.io/{project_folder}"
     project_name = re.sub(r'^\d+-', '', project_folder).replace("-", " ").title()
     
@@ -28,59 +17,22 @@ def generate_project_section(project_folder):
     if non_verbali:
         html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
     
-    # Verbali subsections
+    # Verbali subsections (FIXED FOLDER NAMES)
     html += '<div class="verbali-container">'
-    for tipo in ["interno", "esterno"]:
+    for tipo in ["interni", "esterni"]:  # Changed to match folder names
         verbali = sorted(glob.glob(f"{project_path}/verbali/{tipo}/*.pdf"), 
                        key=lambda x: os.path.basename(x), reverse=True)
         if verbali:
             html += f"""
             <div>
-                <h2>Verbale {tipo.title()}</h2>
+                <h2>Verbale {tipo[:-1].title()}</h2>  # "interni" → "interno"
                 <ul>
             """
             for pdf in verbali:
-                date_str = os.path.basename(pdf).split('_')[1][:8]  # Extract YYYYMMDD
+                date_str = os.path.basename(pdf).split('_')[1][:8]
                 date = datetime.strptime(date_str, "%Y%m%d").strftime("%d/%m/%Y")
                 html += f'<li><a href="{project_folder}/verbali/{tipo}/{os.path.basename(pdf)}">{date}</a></li>'
             html += '</ul></div>'
     html += '</div></section>'
     
     return html
-
-def generate_aside_links(projects):
-    """Generate navigation links for the aside"""
-    links = []
-    for project in projects:
-        name = re.sub(r'^\d+-', '', project).replace("-", " ").title()
-        links.append(f'<li><a href="#{project}">{name}</a></li>')
-    return '\n'.join(links)
-
-def update_index():
-    # Read the existing index.html
-    with open("Tests.github.io/index.html", "r") as f:
-        content = f.read()
-    
-    # Get all projects
-    projects = get_projects()
-    
-    # Generate aside links
-    aside_links = generate_aside_links(projects)
-    content = content.replace(
-        '<!-- ASIDE LINKS PLACEHOLDER -->',
-        aside_links
-    )
-    
-    # Generate project sections
-    projects_html = "\n".join([generate_project_section(p) for p in projects])
-    content = content.replace(
-        '<!-- PROJECT SECTIONS PLACEHOLDER -->',
-        projects_html
-    )
-    
-    # Save the updated index.html
-    with open("Tests.github.io/index.html", "w") as f:
-        f.write(content)
-
-if __name__ == "__main__":
-    update_index()
