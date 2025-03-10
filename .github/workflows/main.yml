@@ -41,7 +41,7 @@ jobs:
           # Generate updated index.html
           cp index.html ..
           cd ..
-          python3 generate_sections.py
+          python3 generate_html.py
           cp index.html site-repo/
           
           # Commit changes
