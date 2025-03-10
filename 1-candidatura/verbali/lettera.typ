@@ -13,7 +13,7 @@
 )
 
 = Riferimenti generali
-Il seguente documento contiene il resoconto della riunione interna del gruppo _Sigma18_ tenutasi in modalità *virtuale* tramite la piattaforma _Discord_, avvenuta in data *07 Marzo 2025* e dalla durata di un'*ora* e *10 minuti*.
+Il seguente documento contiene il rsesoconto della riunione interna del gruppo _Sigma18_ tenutasi in modalità *virtuale* tramite la piattaforma _Discord_, avvenuta in data *07 Marzo 2025* e dalla durata di un'*ora* e *10 minuti*.
 
 Nella riunione sono stati trattati i punti all'ordine del giorno.
 
