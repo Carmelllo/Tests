@@ -6,8 +6,8 @@ from datetime import datetime
 def get_projects():
     """Find all numbered project folders (1-candidatura, 2-rtb, etc.)"""
     return sorted(
-        [f for f in os.listdir('Tests') 
-         if re.match(r'^\d+-', f) and os.path.isdir(os.path.join('Tests', f))],
+        [f for f in os.listdir('Tests.github.io') 
+         if re.match(r'^\d+-', f) and os.path.isdir(os.path.join('Tests.github.io', f))],
         key=lambda x: int(x.split('-')[0])
     )
 
