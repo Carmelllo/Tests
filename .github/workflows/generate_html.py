@@ -5,8 +5,11 @@ from datetime import datetime
 
 def get_projects():
     """Find all numbered project folders (1-candidatura, 2-rtb, etc.)"""
-    return sorted([f for f in os.listdir('Tests.github.io') 
-                  if re.match(r'^\d+-', f)])
+    return sorted(
+        [f for f in os.listdir('Tests.github.io') 
+         if re.match(r'^\d+-', f) and os.path.isdir(os.path.join('Tests.github.io', f))],
+        key=lambda x: int(x.split('-')[0])
+    )
 
 def generate_project_section(project_folder):
     project_path = f"Tests.github.io/{project_folder}"
@@ -17,13 +20,17 @@ def generate_project_section(project_folder):
         <h1>{project_name}</h1>
     """
     
-    # Non-verbali documents (include all PDFs not in verbali subfolders)
+    # Non-verbali documents (include root-level PDFs)
     non_verbali = []
     for doc in glob.glob(f"{project_path}/**/*.pdf", recursive=True):
-        if "verbali" not in os.path.dirname(doc):
+        # Check if "verbali" is in the relative path from the project folder
+        if "verbali" not in os.path.relpath(doc, project_path):
             rel_path = os.path.relpath(doc, project_path)
             doc_name = os.path.basename(doc).replace(".pdf", "").replace("-", " ").title()
             non_verbali.append(f'<li><a href="{project_folder}/{rel_path}">{doc_name}</a></li>')
+    
+    if non_verbali:
+        html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
     
     # Verbali subsections
     html += '<div class="verbali-container">'
@@ -49,10 +56,17 @@ def update_index():
     with open("Tests.github.io/index.html", "r") as f:
         content = f.read()
     
-    # Generate aside links
+    # Generate aside links with acronym handling
     projects = get_projects()
-    aside_links = "\n".join([f'<li><a href="#{p}">{re.sub(r"^\\d+-", "", p).replace("-", " ").title()}</a></li>' for p in projects])
-    content = content.replace("<!-- ASIDE LINKS PLACEHOLDER -->", aside_links)
+    aside_links = []
+    for p in projects:
+        name_part = p.split("-", 1)[1] if "-" in p else p
+        if name_part.islower() and 3 <= len(name_part) <= 5:
+            display_name = name_part.upper()
+        else:
+            display_name = name_part.replace("-", " ").title()
+        aside_links.append(f'<li><a href="#{p}">{display_name}</a></li>')
+    content = content.replace("<!-- ASIDE LINKS PLACEHOLDER -->", "\n".join(aside_links))
     
     # Generate main content
     projects_html = "\n".join([generate_project_section(p) for p in projects])
