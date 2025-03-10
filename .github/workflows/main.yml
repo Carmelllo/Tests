@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '**/*.typ'
+      - '**/*.py'
 
 jobs:
   deploy:
