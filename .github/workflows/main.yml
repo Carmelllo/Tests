@@ -17,15 +17,17 @@ jobs:
           curl -L https://github.com/typst/typst/releases/download/v0.11.0/typst-x86_64-unknown-linux-musl.tar.xz | tar xJ
           echo "$(pwd)/typst-x86_64-unknown-linux-musl" >> $GITHUB_PATH
 
-      - name: Compile All Documents
-        run: |
-          # Compile all .typ files while preserving folder structure
-          find . -name '*.typ' | while read typ_file; do
-            rel_path="${typ_file#./}"
-            pdf_path="${rel_path%.typ}.pdf"
-            mkdir -p "compiled/$(dirname "$pdf_path")"
-            typst compile "$typ_file" "compiled/$pdf_path"
-          done
+- name: Compile All Documents
+  run: |
+    # Compile all .typ files while preserving folder structure
+    find . -name '*.typ' | while read typ_file; do
+      rel_path="${typ_file#./}"
+      pdf_path="${rel_path%.typ}.pdf"
+      mkdir -p "compiled/$(dirname "$pdf_path")"
+      
+      # Set project root to the root of the repo
+      typst compile --root . "$typ_file" "compiled/$pdf_path"
+    done
 
       - name: Deploy to Site Repo
         env:
