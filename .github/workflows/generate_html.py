@@ -74,7 +74,7 @@ def update_index():
     new_aside_content = f"{aside_start}\n{''.join(aside_links)}\n{aside_end}"
     content = aside_pattern.sub(new_aside_content, content)
     
-    # Generate main contenta
+    # Generate main content
     projects_html = "\n".join([generate_project_section(p) for p in projects])
     start_marker = "<!-- AUTO-GENERATED CONTENT START -->"
     end_marker = "<!-- AUTO-GENERATED CONTENT END -->"
