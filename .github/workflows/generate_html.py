@@ -35,7 +35,7 @@ def generate_project_section(project_folder):
         if verbali:
             html += f"""
             <div>
-                <h2>Verbai {tipo.title()}</h2>
+                <h2>Verbali {tipo.title()}</h2>
                 <ul>
             """
             for pdf in verbali:
