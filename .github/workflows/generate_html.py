@@ -68,7 +68,7 @@ def update_index():
         aside_links.append(f'<li><a href="#{p}">{display_name}</a></li>')
     content = content.replace("<!-- ASIDE LINKS PLACEHOLDER -->", "\n".join(aside_links))
     
-    # Generate main content
+    # Generate main contenta
     projects_html = "\n".join([generate_project_section(p) for p in projects])
     start_marker = "<!-- AUTO-GENERATED CONTENT START -->"
     end_marker = "<!-- AUTO-GENERATED CONTENT END -->"
