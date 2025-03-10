@@ -6,7 +6,7 @@
   responsabili: "Carmelo Russello",
   redattori: "Pietro Crotti",
   verificatori: "Aleena Mathew",
-  tipo: "Verbale Interno",
+  tipo: "Verbale ssInterno",
   destinatari: "Sigma18",
   versioneAttuale: "1.0.0",
   content: content,
