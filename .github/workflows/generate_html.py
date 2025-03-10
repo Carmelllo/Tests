@@ -29,7 +29,7 @@ def generate_project_section(project_folder):
             doc_name = os.path.basename(doc).replace(".pdf", "").replace("-", " ").title()
             non_verbali.append(f'<li><a href="{project_folder}/{rel_path}">{doc_name}</a></li>')
     
-
+    if non_verbali
         html += '<ul class="document-list">\n' + '\n'.join(non_verbali) + '</ul>'
     
     # Verbali subsections
