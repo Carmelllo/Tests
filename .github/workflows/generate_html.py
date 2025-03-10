@@ -67,7 +67,12 @@ def update_index():
         else:
             display_name = name_part.replace("-", " ").title()
         aside_links.append(f'<li><a href="#{p}">{display_name}</a></li>')
-    content = content.replace("<!-- ASIDE LINKS PLACEHOLDER -->", "\n".join(aside_links))
+    
+    aside_start = "<!-- AUTO-GENERATED ASIDE START -->"
+    aside_end = "<!-- AUTO-GENERATED ASIDE END -->"
+    aside_pattern = re.compile(f"{re.escape(aside_start)}.*?{re.escape(aside_end)}", re.DOTALL)
+    new_aside_content = f"{aside_start}\n{''.join(aside_links)}\n{aside_end}"
+    content = aside_pattern.sub(new_aside_content, content)
     
     # Generate main contenta
     projects_html = "\n".join([generate_project_section(p) for p in projects])
